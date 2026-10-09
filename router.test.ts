@@ -93,8 +93,8 @@ describe("provider quota", () => {
   it("uses Cursor on-demand quota after included usage is exhausted", () => {
     const remaining = quotaRemainingByProvider({
       codex: { status: "expired" },
-      claudeCode: { status: "unauthenticated" },
-      cursor: {
+      "claude-code": { status: "unauthenticated" },
+      "acp-cursor": {
         status: "ok",
         accountEmail: null,
         planLabel: "Pro",

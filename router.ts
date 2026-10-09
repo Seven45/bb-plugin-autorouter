@@ -161,13 +161,13 @@ export function quotaRemainingByProvider(
     ],
     [
       "claude-code",
-      remainingQuota(usage.claudeCode, {
+      remainingQuota(usage["claude-code"], {
         useSpendWhenIncludedQuotaIsExhausted: false,
       }),
     ],
     [
       "acp-cursor",
-      remainingQuota(usage.cursor, {
+      remainingQuota(usage["acp-cursor"], {
         useSpendWhenIncludedQuotaIsExhausted: true,
       }),
     ],
