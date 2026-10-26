@@ -90,6 +90,45 @@ describe("model overrides", () => {
 });
 
 describe("provider quota", () => {
+  it("reads quota from the legacy response keys", () => {
+    const remaining = quotaRemainingByProvider({
+      codex: { status: "expired" },
+      claudeCode: {
+        status: "ok",
+        accountEmail: null,
+        planLabel: "Pro",
+        windows: [{ label: "Weekly limit", usedPercent: 25, resetsAt: null }],
+      },
+      cursor: { status: "unauthenticated" },
+    });
+    expect([...remaining]).toEqual([
+      ["codex", 0],
+      ["claude-code", 0.75],
+      ["acp-cursor", 0],
+    ]);
+  });
+
+  it("prefers provider IDs when legacy keys are also present", () => {
+    const remaining = quotaRemainingByProvider({
+      codex: { status: "expired" },
+      "claude-code": { status: "unauthenticated" },
+      "acp-cursor": { status: "not_installed" },
+      claudeCode: {
+        status: "error",
+        message: "unavailable",
+        accountEmail: null,
+        planLabel: null,
+      },
+      cursor: {
+        status: "error",
+        message: "unavailable",
+        accountEmail: null,
+        planLabel: null,
+      },
+    });
+    expect([...remaining.values()]).toEqual([0, 0, 0]);
+  });
+
   it("uses Cursor on-demand quota after included usage is exhausted", () => {
     const remaining = quotaRemainingByProvider({
       codex: { status: "expired" },

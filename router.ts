@@ -44,10 +44,10 @@ export interface RoutedThreadResult extends ResolvedRoute {
   threadId: string;
 }
 
-type UsageResponse = Awaited<
+type UsageEntry = Awaited<
   ReturnType<BbPluginApi["sdk"]["system"]["usageLimits"]>
->;
-type UsageEntry = UsageResponse[keyof UsageResponse];
+>["codex"];
+type UsageResponse = Record<string, UsageEntry>;
 
 function taskText(input: NewThreadRequest["input"]): string {
   return input
@@ -161,13 +161,13 @@ export function quotaRemainingByProvider(
     ],
     [
       "claude-code",
-      remainingQuota(usage["claude-code"], {
+      remainingQuota(usage["claude-code"] ?? usage.claudeCode, {
         useSpendWhenIncludedQuotaIsExhausted: false,
       }),
     ],
     [
       "acp-cursor",
-      remainingQuota(usage["acp-cursor"], {
+      remainingQuota(usage["acp-cursor"] ?? usage.cursor, {
         useSpendWhenIncludedQuotaIsExhausted: true,
       }),
     ],
