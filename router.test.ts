@@ -90,6 +90,17 @@ describe("model overrides", () => {
 });
 
 describe("provider quota", () => {
+  it("requires a complete supported response at compile time", () => {
+    type UsageResponse = Parameters<typeof quotaRemainingByProvider>[0];
+    // @ts-expect-error A response must include all supported providers.
+    const empty: UsageResponse = {};
+    // @ts-expect-error Codex alone is not a complete response.
+    const incomplete: UsageResponse = { codex: { status: "expired" } };
+    // @ts-expect-error Arbitrary keys cannot replace the supported providers.
+    const misspelled: UsageResponse = { claude: { status: "expired" } };
+    void [empty, incomplete, misspelled];
+  });
+
   it("reads quota from the legacy response keys", () => {
     const remaining = quotaRemainingByProvider({
       codex: { status: "expired" },
